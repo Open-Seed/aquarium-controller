@@ -14,8 +14,9 @@ enum StripType
 #define CONFIG_STRIP RGB // Choose one of the options from above.
 
 // MQTT Topics
-#define CONFIG_MQTT_TOPIC_STATE "open_led/ESP_LED"
-#define CONFIG_MQTT_TOPIC_SET "open_led/ESP_LED/set"
+#define CONFIG_MQTT_TOPIC_LED_STATE "open_aquarium/LED"
+#define CONFIG_MQTT_TOPIC_LED_STATE_SET "open_aquarium/LED/set"
+#define CONFIG_MQTT_TOPIC_TEMP_STATE "open_aquarium/TEMP"
 
 #define CONFIG_MQTT_PAYLOAD_ON "ON"
 #define CONFIG_MQTT_PAYLOAD_OFF "OFF"
@@ -47,6 +48,8 @@ enum StripType
 #define CONFIG_PIN_GREEN 2  // For RGB(W)
 #define CONFIG_PIN_BLUE 3   // For RGB(W)
 #define CONFIG_PIN_WHITE -1 // For BRIGHTNESS and RGBW
+
+#define CONFIG_PIN_TEMP 10 // on pin 10 (a 4.7K resistor is necessary)
 
 // Miscellaneous
 #define CONFIG_DEFAULT_TRANSITION_TIME 1

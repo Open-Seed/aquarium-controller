@@ -6,10 +6,12 @@
 #include <ESP8266WiFi.h>
 #include "service-mqtt.h"
 #include "../managers/manager-led.h"
+#include "../managers/manager-temp.h"
 #include "../system/system-preference.h"
 
 extern SystemPreference systemPreference;
 extern LedManager ledManager;
+extern TempManager tempManager;
 extern WiFiClient espClient;
 
 MQTTClient mqtt;
@@ -45,14 +47,23 @@ void messageReceived(String &topic, String &payload)
     Serial.print(topic);
     Serial.print("] ");
 
-    if (topic == CONFIG_MQTT_TOPIC_SET)
+    if (topic == CONFIG_MQTT_TOPIC_LED_STATE_SET)
     {
         ledManager.processJson(payload);
         ledManager.setState();
+        String state = ledManager.getState();
+        mqtt.publish(CONFIG_MQTT_TOPIC_LED_STATE, state, true, 0);
     }
-
-    String state = ledManager.getState();
-    mqtt.publish(CONFIG_MQTT_TOPIC_STATE, state, true, 0);
+    else if (topic == CONFIG_MQTT_TOPIC_LED_STATE)
+    {
+        String state = ledManager.getState();
+        mqtt.publish(CONFIG_MQTT_TOPIC_LED_STATE, state, true, 0);
+    }
+    else if (topic == CONFIG_MQTT_TOPIC_TEMP_STATE)
+    {
+        float state = tempManager.getTemperature();
+        mqtt.publish(CONFIG_MQTT_TOPIC_TEMP_STATE, String(state), true, 0);
+    }
 }
 
 MQTTService::MQTTService()
@@ -68,8 +79,9 @@ MQTTService::MQTTService()
 
         mqtt.begin(mqttServer, mqttPort, espClient);
         mqtt.onMessage(messageReceived);
-        mqtt.subscribe(CONFIG_MQTT_TOPIC_SET);
-        mqtt.subscribe(CONFIG_MQTT_TOPIC_STATE);
+        mqtt.subscribe(CONFIG_MQTT_TOPIC_LED_STATE);
+        mqtt.subscribe(CONFIG_MQTT_TOPIC_LED_STATE_SET);
+        mqtt.subscribe(CONFIG_MQTT_TOPIC_TEMP_STATE);
     }
 }
 

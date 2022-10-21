@@ -7,6 +7,7 @@
 
 // ---- Managers ----
 #include "managers/manager-led.h"
+#include "managers/manager-temp.h"
 
 // ---- Services ----
 #include "services/service-mqtt.h"
@@ -22,6 +23,7 @@ ServerService *serverService;
 SystemPreference *systemPreference;
 MQTTService *mqttService;
 LedManager *ledManager;
+TempManager *tempManager;
 
 bool shouldReboot = false;
 
@@ -40,6 +42,7 @@ void setup()
   if (systemWifi.init())
   {
     ledManager = new LedManager();
+    tempManager = new TempManager();
     mqttService = new MQTTService();
     serverService = new ServerService();
     Serial.println(F("Open LED Controller Started"));
@@ -61,6 +64,7 @@ void loop()
   }
 
   ledManager->tick();
+  tempManager->tick();
 
   mqttService->tick();
   serverService->tick();
